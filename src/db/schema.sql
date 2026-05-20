@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS places (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  latitude DECIMAL(9,6) NOT NULL,
+  longitude DECIMAL(9,6) NOT NULL,
+  rating DECIMAL(2,1) DEFAULT 0,
+  avg_visit_duration INT NOT NULL
+);
