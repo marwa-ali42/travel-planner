@@ -5,5 +5,7 @@ CREATE TABLE IF NOT EXISTS places (
   latitude DECIMAL(9,6) NOT NULL,
   longitude DECIMAL(9,6) NOT NULL,
   rating DECIMAL(2,1) DEFAULT 0,
-  avg_visit_duration INT NOT NULL
+  avg_visit_duration INT NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  country VARCHAR(100) NOT NULL
 );
