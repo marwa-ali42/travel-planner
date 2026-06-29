@@ -1,7 +1,7 @@
 import express from "express";
-import healthRoutes from "@/routes/health.routes.js";
-import placesRoutes from "@/routes/places.routes.js";
-import itineraryRoutes from "@/routes/itinerary.routes.js";
+import healthRoutes from "./routes/health.routes.js";
+import placesRoutes from "./routes/places.routes.js";
+import itineraryRoutes from "./routes/itinerary.routes.js";
 
 const app = express();
 

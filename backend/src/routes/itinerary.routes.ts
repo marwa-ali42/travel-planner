@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { pool } from "@/db/index.js";
-import { type Place } from "@/types.js";
-import { generateDistanceAwareItinerary } from "@/services/itinerary.js";
+import { pool } from "../db/index.js";
+import { type Place } from "../types.js";
+import { generateDistanceAwareItinerary } from "../services/itinerary.js";
 
 const router = Router();
 
 router.post("/generate", async (req, res) => {
   try {
+    console.log("Calling backend...");
     const { city, startTime, endTime, interests } = req.body;
 
     // Validate required parameters
@@ -44,3 +45,4 @@ router.post("/generate", async (req, res) => {
 });
 
 export default router;
+

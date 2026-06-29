@@ -1,5 +1,5 @@
 
-import type { Place } from "@/types.js";
+import type { Place } from "../types.js";
 import { computeScore } from "./scoring.js";
 import { formatTime, parseTime } from "../utils/time.js";
 import { getTransitTimeMinutes } from "../utils/geo.js";
