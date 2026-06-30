@@ -1,15 +1,53 @@
-export default function ItineraryList() {
+import type { ItineraryItem } from "@/types";
+
+export default function ItineraryList({
+  itinerary,
+}: {
+  itinerary: ItineraryItem[];
+}) {
+  if (!itinerary.length) {
+    return (
+      <div className="p-4 text-gray-500">
+        No itinerary yet. Generate a trip ✈️
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 space-y-4">
-      <div className="border p-2 rounded">
-        <h3 className="font-bold">Itinerary Item 1</h3>
-        <p>Details about the itinerary item.</p>
+      <h2 className="text-lg font-semibold">Your itinerary</h2>
+
+      <div className="space-y-3">
+        {itinerary.map((item, i) => (
+          <div
+            key={i}
+            className="border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition"
+          >
+            {/* top row */}
+            <div className="flex justify-between items-center">
+              <h3 className="font-medium text-gray-900">
+                {item.place}
+              </h3>
+
+              <span className="text-sm text-gray-500">
+                {item.category}
+              </span>
+            </div>
+
+            {/* time */}
+            <p className="text-sm text-gray-700 mt-1">
+              🕒 {item.start} → {item.end}
+            </p>
+
+            {/* transit */}
+            {item.transit !== undefined && item.transit > 0 && (
+              <p className="text-xs text-gray-400 mt-1">
+                🚶 {item.transit} min travel
+              </p>
+            )}
+          </div>
+        ))}
       </div>
-      <div className="border p-2 rounded">
-        <h3 className="font-bold">Itinerary Item 2</h3>
-        <p>Details about the itinerary item.</p>
-      </div>
-      {/* Add more itinerary items as needed */}
     </div>
   );
 }
