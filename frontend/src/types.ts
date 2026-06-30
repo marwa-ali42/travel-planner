@@ -3,5 +3,7 @@ export interface ItineraryItem {
   category: string;
   start: string;
   end: string;
-  transitToPlace: string;
-}
+  transit: number;
+  latitude: number;
+  longitude: number;
+};

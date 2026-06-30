@@ -72,6 +72,8 @@ export function generateDistanceAwareItinerary(
       start: formatTime(arrival),
       end: formatTime(arrival + best.avg_visit_duration),
       transit: best.transit,
+      latitude: Number(best.latitude),
+      longitude: Number(best.longitude),
     });
 
     // Update current time and location
