@@ -1,6 +1,7 @@
 import SearchPanel from "../components/SearchPanel";
 import MapView from "../components/MapView";
 import ItineraryList from "../components/ItineraryList";
+import Summary from "../components/Summary.js";
 import type { ItineraryItem } from "@/types";
 import { useState } from "react";
 import { generateItinerary } from "@/services/api";
@@ -35,11 +36,13 @@ export default function Home() {
   
   return (
     <div className="h-screen flex flex-col">
-      
-      {/* top section */}
+
+      {/* TOP SECTION */}
       <div className="flex flex-1">
-        
-        <div className="w-1/3 p-4 border-r">
+
+        {/* LEFT SIDE */}
+        <div className="w-1/3 p-4 border-r flex flex-col gap-4">
+
           <SearchPanel
             city={city}
             setCity={setCity}
@@ -52,15 +55,19 @@ export default function Home() {
             onGenerate={handleGenerate}
             loading={loading}
           />
+
+          <Summary itinerary={itinerary} />
+
         </div>
 
+        {/* MAP */}
         <div className="flex-1">
           <MapView itinerary={itinerary} />
         </div>
 
       </div>
 
-      {/* bottom section */}
+      {/* BOTTOM SECTION */}
       <div className="h-1/3 border-t overflow-auto">
         <ItineraryList itinerary={itinerary} />
       </div>

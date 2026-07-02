@@ -100,9 +100,12 @@ export default function SearchPanel({
       <button
         onClick={onGenerate}
         disabled={loading}
-        className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+        className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition flex items-center justify-center gap-2"
       >
-        {loading ? "Generating..." : "Generate itinerary"}
+        {loading && (
+          <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+        )}
+        {loading ? "Building your trip..." : "Generate itinerary"}
       </button>
     </div>
   );

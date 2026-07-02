@@ -22,7 +22,8 @@ export async function generateItinerary(
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.error);
+    const errorBody = await response.json();
+    throw new Error(errorBody.error || "Failed to generate itinerary");
   }
 
   return body.itinerary;
