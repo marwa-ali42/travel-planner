@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { pool } from "@/db/index.js";
-import { type Place } from "@/types.js";
-import { generateDistanceAwareItinerary } from "@/services/itinerary.js";
+import { pool } from "../db/index.js";
+import { type Place } from "../types.js";
+import { generateDistanceAwareItinerary } from "../services/itinerary.js";
 
 const router = Router();
 
 router.post("/generate", async (req, res) => {
   try {
+    console.log("Calling backend...");
     const { city, startTime, endTime, interests } = req.body;
 
     // Validate required parameters
@@ -25,9 +26,10 @@ router.post("/generate", async (req, res) => {
     // Fetch places from the database in the specified city
     const result = await pool.query<Place>("SELECT * FROM places WHERE city = $1;", [city]);
 
+    // If query returns empty results, return empty itinerary array
     if (result.rows.length === 0) {
-      return res.status(404).json({
-        error: "No places found for this city"
+      return res.status(200).json({
+        itinerary: []
       });
     }
     
@@ -44,3 +46,4 @@ router.post("/generate", async (req, res) => {
 });
 
 export default router;
+

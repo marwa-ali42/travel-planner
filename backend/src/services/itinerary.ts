@@ -1,5 +1,5 @@
 
-import type { Place } from "@/types.js";
+import type { Place } from "../types.js";
 import { computeScore } from "./scoring.js";
 import { formatTime, parseTime } from "../utils/time.js";
 import { getTransitTimeMinutes } from "../utils/geo.js";
@@ -72,6 +72,8 @@ export function generateDistanceAwareItinerary(
       start: formatTime(arrival),
       end: formatTime(arrival + best.avg_visit_duration),
       transit: best.transit,
+      latitude: Number(best.latitude),
+      longitude: Number(best.longitude),
     });
 
     // Update current time and location

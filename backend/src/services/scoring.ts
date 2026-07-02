@@ -1,4 +1,4 @@
-import type { Place } from "@/types.js";
+import type { Place } from "../types.js";
 import { getTransitTimeMinutes } from "../utils/geo.js";
 
 // Compute score based on rating, interest match, and transit time from the last place

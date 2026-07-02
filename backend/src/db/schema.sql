@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS places CASCADE;
+
 CREATE TABLE IF NOT EXISTS places (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -7,5 +9,9 @@ CREATE TABLE IF NOT EXISTS places (
   rating DECIMAL(2,1) DEFAULT 0,
   avg_visit_duration INT NOT NULL,
   city VARCHAR(100) NOT NULL,
-  country VARCHAR(100) NOT NULL
+  country VARCHAR(100) NOT NULL,
+
+  CONSTRAINT unique_places_name_city UNIQUE (name, city)
 );
+
+CREATE UNIQUE INDEX unique_places_idx ON places (LOWER(name), LOWER(city));
