@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "seed": "bash src/db/seed.sh"
   },
   "repository": {
     "type": "git",
