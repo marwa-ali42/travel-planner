@@ -13,6 +13,7 @@ export default function Home() {
   const [interests, setInterests] = useState<string[]>([]);
   const [itinerary, setItinerary] = useState<ItineraryItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const hasItinerary = itinerary.length > 0;
   
   // Function to generate itinerary
   async function handleGenerate() {
@@ -56,13 +57,19 @@ export default function Home() {
             loading={loading}
           />
 
-          <Summary itinerary={itinerary} />
+          {hasItinerary && <Summary itinerary={itinerary} />}
 
         </div>
 
         {/* MAP */}
         <div className="flex-1">
-          <MapView itinerary={itinerary} />
+          {hasItinerary ? (
+            <MapView itinerary={itinerary} />
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              Generate a trip to see the map 🗺️
+            </div>
+          )}
         </div>
 
       </div>
