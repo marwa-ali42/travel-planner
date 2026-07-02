@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export interface GenerateItineraryRequest {
   city: string;
@@ -25,5 +25,5 @@ export async function generateItinerary(
     throw new Error(body.error);
   }
 
-  return body;
+  return body.itinerary;
 }

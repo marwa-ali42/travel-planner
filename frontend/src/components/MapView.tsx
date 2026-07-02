@@ -7,6 +7,7 @@ import {
 } from "react-leaflet";
 import FitBounds from "@/utils/FitBounds";
 import type { ItineraryItem } from "../types";
+import createNumberIcon from "@/utils/NumberIcon";
 
 type Props = {
   itinerary: ItineraryItem[];
@@ -24,13 +25,16 @@ export default function MapView({ itinerary }: Props) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {itinerary.map((item) => (
+      {itinerary.map((item, i) => (
         <Marker
           key={item.place}
           position={[item.latitude, item.longitude]}
+          icon={createNumberIcon(i + 1)}
         >
           <Popup>
-            <strong>{item.place}</strong>
+            <strong>
+              {i + 1}. {item.place}
+            </strong>
             <br />
             {item.start} – {item.end}
           </Popup>

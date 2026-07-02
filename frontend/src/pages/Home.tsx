@@ -3,8 +3,7 @@ import MapView from "../components/MapView";
 import ItineraryList from "../components/ItineraryList";
 import type { ItineraryItem } from "@/types";
 import { useState } from "react";
-
-const API_BASE = "http://localhost:3000";
+import { generateItinerary } from "@/services/api";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -16,29 +15,22 @@ export default function Home() {
   
   // Function to generate itinerary
   async function handleGenerate() {
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const res = await fetch(`${API_BASE}/itinerary/generate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const itinerary = await generateItinerary({
         city,
         startTime,
         endTime,
         interests,
-      }),
-    });
+      });
 
-    const data = await res.json();
-    setItinerary(data.itinerary);
-  } catch (err) {
-    console.error(err);
-  }
-
-  setLoading(false);
+      setItinerary(itinerary);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
   
   return (

@@ -26,7 +26,7 @@ export default function ItineraryList({
             {/* top row */}
             <div className="flex justify-between items-center">
               <h3 className="font-medium text-gray-900">
-                {item.place}
+                {i + 1}. {item.place}
               </h3>
 
               <span className="text-sm text-gray-500">
