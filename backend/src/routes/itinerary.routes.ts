@@ -24,7 +24,10 @@ router.post("/generate", async (req, res) => {
     }
 
     // Fetch places from the database in the specified city
-    const result = await pool.query<Place>("SELECT * FROM places WHERE city = $1;", [city]);
+    const result = await pool.query<Place>(
+      "SELECT * FROM places WHERE LOWER(city) = LOWER($1);",
+      [city.trim()]
+    );
 
     // If query returns empty results, return empty itinerary array
     if (result.rows.length === 0) {
