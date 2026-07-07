@@ -7,7 +7,10 @@ import cors from 'cors';
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: [
+      "http://localhost:5173",
+      "https://planmyholiday.vercel.app",
+    ],
 }));
 app.use(express.json());
 
