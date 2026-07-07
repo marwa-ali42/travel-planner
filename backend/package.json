@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "test": "vitest",
     "test:integration": "vitest run",
     "seed": "bash src/db/seed.sh"
