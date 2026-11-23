@@ -1,3 +1,13 @@
+export interface OpeningHours {
+  monday?: string;
+  tuesday?: string;
+  wednesday?: string;
+  thursday?: string;
+  friday?: string;
+  saturday?: string;
+  sunday?: string;
+}
+
 export interface Place {
   id: number;
   name: string;
@@ -8,6 +18,7 @@ export interface Place {
   avg_visit_duration: number;
   city: string;
   country: string;
+  opening_hours?: OpeningHours;
 }
 
 export interface ScoredPlace extends Place {

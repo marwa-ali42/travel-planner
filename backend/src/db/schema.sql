@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS places (
   avg_visit_duration INT NOT NULL,
   city VARCHAR(100) NOT NULL,
   country VARCHAR(100) NOT NULL,
+  opening_hours JSONB,
 
   CONSTRAINT unique_places_name_city UNIQUE (name, city)
 );
