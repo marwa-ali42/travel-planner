@@ -26,17 +26,18 @@ describe("POST /itinerary/generate (integration)", () => {
     expect(first).toHaveProperty("category");
   });
 
-  it("returns empty itinerary for unknown city", async () => {
-  const res = await request(app)
-    .post("/itinerary/generate")
-    .send({
-      city: "MarsCity",
-      startTime: "09:00",
-      endTime: "18:00",
-      interests: [],
-    });
+  it("returns 404 for unknown city", async () => {
+    const res = await request(app)
+      .post("/itinerary/generate")
+      .send({
+        city: "Unknown City",
+        startTime: "09:00",
+        endTime: "18:00",
+        interests: [],
+      });
 
-  expect(res.status).toBe(200);
-  expect(res.body.itinerary).toEqual([]);
-});
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("No places found for this city");
+  });
+
 });

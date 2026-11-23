@@ -11,6 +11,12 @@ type Props = {
   interests: string[];
   setInterests: (v: string[]) => void;
 
+  startingLocation: string;
+  setStartingLocation: (v: string) => void;
+
+  onUseCurrentLocation: () => void;
+  locationStatus: string;
+
   onGenerate: () => void;
   loading: boolean;
 };
@@ -26,6 +32,10 @@ export default function SearchPanel({
   setEndTime,
   interests,
   setInterests,
+  startingLocation,
+  setStartingLocation,
+  onUseCurrentLocation,
+  locationStatus,
   onGenerate,
   loading,
 }: Props) {
@@ -39,7 +49,7 @@ export default function SearchPanel({
 
   return (
     <div className="space-y-5">
-      
+
       {/* CITY */}
       <div>
         <label className="text-sm text-gray-600">City</label>
@@ -49,6 +59,34 @@ export default function SearchPanel({
           value={city}
           onChange={(e) => setCity(e.target.value)}
         />
+      </div>
+
+      {/* STARTING LOCATION */}
+      <div>
+        <label className="text-sm text-gray-600">
+          Starting point
+        </label>
+
+        <input
+          className="w-full border rounded p-2 mt-1"
+          placeholder="e.g. London Bridge"
+          value={startingLocation}
+          onChange={(e) => setStartingLocation(e.target.value)}
+        />
+
+        <button
+          type="button"
+          onClick={onUseCurrentLocation}
+          className="mt-2 text-sm border rounded px-3 py-1.5 hover:bg-gray-100 transition"
+        >
+          📍 Use my current location
+        </button>
+
+        {locationStatus && (
+          <p className="text-xs text-gray-500 mt-2">
+            {locationStatus}
+          </p>
+        )}
       </div>
 
       {/* TIME */}
@@ -73,7 +111,7 @@ export default function SearchPanel({
           />
         </div>
       </div>
-      
+
       {/* INTERESTS */}
       <div>
         <label className="text-sm text-gray-600">Interests</label>
@@ -82,6 +120,7 @@ export default function SearchPanel({
           {OPTIONS.map((opt) => (
             <button
               key={opt}
+              type="button"
               onClick={() => toggleInterest(opt)}
               className={`px-3 py-1 rounded-full text-sm border transition
                 ${
@@ -105,6 +144,7 @@ export default function SearchPanel({
         {loading && (
           <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
         )}
+
         {loading ? "Building your trip..." : "Generate itinerary"}
       </button>
     </div>
