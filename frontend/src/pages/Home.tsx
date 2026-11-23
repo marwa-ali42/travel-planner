@@ -17,6 +17,13 @@ export default function Home() {
   const [startingLocation, setStartingLocation] = useState("");
   const [startingLat, setStartingLat] = useState<number | undefined>();
   const [startingLon, setStartingLon] = useState<number | undefined>();
+
+  const [resolvedStartingLat, setResolvedStartingLat] =
+    useState<number | null>(null);
+
+  const [resolvedStartingLon, setResolvedStartingLon] =
+    useState<number | null>(null);
+
   const [locationStatus, setLocationStatus] = useState("");
 
   const hasItinerary = itinerary.length > 0;
@@ -61,7 +68,8 @@ export default function Home() {
       console.log("Starting location:", {
         place: startingLocation || null,
         coordinates:
-          startingLat !== undefined && startingLon !== undefined
+          startingLat !== undefined &&
+          startingLon !== undefined
             ? {
                 latitude: startingLat,
                 longitude: startingLon,
@@ -81,13 +89,19 @@ export default function Home() {
 
       setItinerary(result.itinerary);
 
+      setResolvedStartingLat(result.startingLat);
+      setResolvedStartingLon(result.startingLon);
+
       console.log("Resolved starting location:", {
         place: result.startingLocation,
         latitude: result.startingLat,
         longitude: result.startingLon,
       });
     } catch (err) {
-      console.error("Failed to generate itinerary:", err);
+      console.error(
+        "Failed to generate itinerary:",
+        err
+      );
     } finally {
       setLoading(false);
     }
@@ -126,7 +140,12 @@ export default function Home() {
         {/* MAP */}
         <div className="flex-1">
           {hasItinerary ? (
-            <MapView itinerary={itinerary} />
+            <MapView
+              itinerary={itinerary}
+              startingLat={resolvedStartingLat}
+              startingLon={resolvedStartingLon}
+              startingLocation={startingLocation}
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500">
               Generate a trip to see the map 🗺️

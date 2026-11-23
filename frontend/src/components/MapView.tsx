@@ -11,10 +11,37 @@ import createNumberIcon from "@/utils/NumberIcon";
 
 type Props = {
   itinerary: ItineraryItem[];
+  startingLat?: number | null;
+  startingLon?: number | null;
+  startingLocation?: string | null;
 };
 
+export default function MapView({
+  itinerary,
+  startingLat,
+  startingLon,
+  startingLocation,
+}: Props) {
+  const hasStartingLocation =
+    startingLat !== undefined &&
+    startingLat !== null &&
+    startingLon !== undefined &&
+    startingLon !== null;
 
-export default function MapView({ itinerary }: Props) {
+  const routePositions: [number, number][] = [
+    ...(hasStartingLocation
+      ? [[startingLat!, startingLon!]]
+      : []),
+
+    ...itinerary.map(
+      (item) =>
+        [item.latitude, item.longitude] as [
+          number,
+          number
+        ]
+    ),
+  ];
+
   return (
     <MapContainer
       center={[51.5072, -0.1276]}
@@ -25,10 +52,28 @@ export default function MapView({ itinerary }: Props) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
+      {hasStartingLocation && (
+        <Marker
+          position={[
+            startingLat!,
+            startingLon!,
+          ]}
+        >
+          <Popup>
+            <strong>Starting point</strong>
+            <br />
+            {startingLocation || "Starting location"}
+          </Popup>
+        </Marker>
+      )}
+
       {itinerary.map((item, i) => (
         <Marker
-          key={item.place}
-          position={[item.latitude, item.longitude]}
+          key={`${item.place}-${i}`}
+          position={[
+            item.latitude,
+            item.longitude,
+          ]}
           icon={createNumberIcon(i + 1)}
         >
           <Popup>
@@ -37,20 +82,26 @@ export default function MapView({ itinerary }: Props) {
             </strong>
             <br />
             {item.start} – {item.end}
+            <br />
+            {item.transit > 0 &&
+              `${item.transit} min travel`}
           </Popup>
         </Marker>
       ))}
 
-      <Polyline
-        positions={itinerary.map((item) => [
-          item.latitude,
-          item.longitude,
-        ])}
-        color="#7494d8"
-        weight={4}
-      />
+      {routePositions.length > 1 && (
+        <Polyline
+          positions={routePositions}
+          color="#7494d8"
+          weight={4}
+        />
+      )}
 
-      <FitBounds itinerary={itinerary} />
+      <FitBounds
+        itinerary={itinerary}
+        startingLat={startingLat}
+        startingLon={startingLon}
+      />
     </MapContainer>
   );
 }
