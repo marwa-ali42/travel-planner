@@ -89,4 +89,87 @@ describe("generateDistanceAwareItinerary", () => {
 
     expect(result.length).toBe(1);
   });
+
+  it("skips a place that is closed", () => {
+    const placesWithHours: Place[] = [
+      {
+        ...places[0],
+        opening_hours: {
+          monday: "10:00-18:00",
+          tuesday: "10:00-18:00",
+          wednesday: "10:00-18:00",
+          thursday: "10:00-18:00",
+          friday: "10:00-18:00",
+          saturday: "10:00-18:00",
+          sunday: "10:00-18:00",
+        },
+      },
+      {
+        ...places[1],
+        opening_hours: {
+          monday: "09:00-18:00",
+          tuesday: "09:00-18:00",
+          wednesday: "09:00-18:00",
+          thursday: "09:00-18:00",
+          friday: "09:00-18:00",
+          saturday: "09:00-18:00",
+          sunday: "09:00-18:00",
+        },
+      },
+    ];
+
+    const result = generateDistanceAwareItinerary(
+      placesWithHours,
+      "09:00",
+      "18:00",
+      ["museum"],
+      undefined,
+      undefined,
+      "monday"
+    );
+
+    expect(result[0]?.place).toBe("Park");
+  });
+
+  it("skips a place when the visit would finish after closing", () => {
+    const placesWithHours: Place[] = [
+      {
+        ...places[0],
+        avg_visit_duration: 120,
+        opening_hours: {
+          monday: "09:00-10:00",
+          tuesday: "09:00-10:00",
+          wednesday: "09:00-10:00",
+          thursday: "09:00-10:00",
+          friday: "09:00-10:00",
+          saturday: "09:00-10:00",
+          sunday: "09:00-10:00",
+        },
+      },
+      {
+        ...places[1],
+        opening_hours: {
+          monday: "09:00-18:00",
+          tuesday: "09:00-18:00",
+          wednesday: "09:00-18:00",
+          thursday: "09:00-18:00",
+          friday: "09:00-18:00",
+          saturday: "09:00-18:00",
+          sunday: "09:00-18:00",
+        },
+      },
+    ];
+
+    const result = generateDistanceAwareItinerary(
+      placesWithHours,
+      "09:00",
+      "18:00",
+      ["museum"],
+      undefined,
+      undefined,
+      "monday"
+    );
+
+    expect(result[0]?.place).toBe("Park");
+  });
 });
