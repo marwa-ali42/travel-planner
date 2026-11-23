@@ -8,7 +8,13 @@ const router = Router();
 router.post("/generate", async (req, res) => {
   try {
     console.log("Calling backend...");
-    const { city, startTime, endTime, interests } = req.body;
+    const {
+      city,
+      startTime,
+      endTime,
+      interests,
+      dayOfWeek,
+    } = req.body;
 
     // Validate required parameters
     if (!city) {
@@ -37,7 +43,15 @@ router.post("/generate", async (req, res) => {
     }
     
     // Generate itinerary using the distance-aware algorithm
-    const itinerary = generateDistanceAwareItinerary(result.rows, startTime, endTime, interests || []);
+    const itinerary = generateDistanceAwareItinerary(
+      result.rows,
+      startTime,
+      endTime,
+      interests || [],
+      undefined,
+      undefined,
+      dayOfWeek
+    );
 
     // Return the generated itinerary as JSON
     res.status(200).json({ itinerary });

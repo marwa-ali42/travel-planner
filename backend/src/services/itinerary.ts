@@ -1,8 +1,64 @@
-
-import type { Place } from "../types.js";
+import type { Place, OpeningHours } from "../types.js";
 import { computeScore } from "./scoring.js";
 import { formatTime, parseTime } from "../utils/time.js";
 import { getTransitTimeMinutes } from "../utils/geo.js";
+
+function isPlaceAvailable(
+  place: Place,
+  arrivalTime: number,
+  dayOfWeek?: keyof OpeningHours
+): boolean {
+  // If no opening-hours/day information exists,
+  // keep the existing behaviour.
+  if (!dayOfWeek || !place.opening_hours) {
+    return true;
+  }
+
+  const hours = place.opening_hours[dayOfWeek];
+
+  if (!hours || hours.toLowerCase() === "closed") {
+    return false;
+  }
+
+  const [openTime, closeTime] = hours.split("-");
+
+  if (!openTime || !closeTime) {
+    return true;
+  }
+
+  const openMinutes = parseTime(openTime);
+  const closeMinutes = parseTime(closeTime);
+
+  // Place must be open when we arrive.
+  return arrivalTime >= openMinutes && arrivalTime < closeMinutes;
+}
+
+function canFinishBeforeClosing(
+  place: Place,
+  arrivalTime: number,
+  dayOfWeek?: keyof OpeningHours
+): boolean {
+  if (!dayOfWeek || !place.opening_hours) {
+    return true;
+  }
+
+  const hours = place.opening_hours[dayOfWeek];
+
+  if (!hours || hours.toLowerCase() === "closed") {
+    return false;
+  }
+
+  const [, closeTime] = hours.split("-");
+
+  if (!closeTime) {
+    return true;
+  }
+
+  const closeMinutes = parseTime(closeTime);
+
+  // The entire visit must finish before closing.
+  return arrivalTime + place.avg_visit_duration <= closeMinutes;
+}
 
 // Generate an itinerary that prioritizes places based on score and transit time
 export function generateDistanceAwareItinerary(
@@ -11,27 +67,22 @@ export function generateDistanceAwareItinerary(
   endTimeStr: string,
   interests: string[],
   startingLat?: number,
-  startingLon?: number
-  ) {
-  // Convert start and end times to minutes since midnight
+  startingLon?: number,
+  dayOfWeek?: keyof OpeningHours
+) {
   let currentTime = parseTime(startTimeStr || "09:00");
   const endTime = parseTime(endTimeStr || "18:00");
   const itinerary = [];
 
-  // Create a mutable copy of the places array
   let availablePlaces = [...places];
 
-  // Initialize current location to starting point or first place
   let currentLat = startingLat ?? Number(places[0]?.latitude ?? 0);
   let currentLon = startingLon ?? Number(places[0]?.longitude ?? 0);
 
-  // Keep track of the last place visited to calculate transit times
   let lastPlace: Place | null = null;
 
-  // Loop until we run out of time or places
   while (currentTime < endTime && availablePlaces.length > 0) {
     const scored = availablePlaces.map((p) => {
-      // Calculate transit time from current location to this place
       const transit = lastPlace
         ? getTransitTimeMinutes(
             currentLat,
@@ -40,8 +91,7 @@ export function generateDistanceAwareItinerary(
             Number(p.longitude)
           )
         : 0;
-      
-      // Compute the score for this place based on interests and transit time
+
       return {
         ...p,
         score: computeScore(p, interests, lastPlace),
@@ -49,23 +99,39 @@ export function generateDistanceAwareItinerary(
       };
     });
 
-    // Sort places by score in descending order
     scored.sort((a, b) => b.score - a.score);
+
     const best = scored[0];
     if (!best) break;
 
-    // Calculate total time needed to visit this place (transit + visit duration)
-    const totalTime = best.transit + best.avg_visit_duration;
+    const arrival = currentTime + best.transit;
 
-    // If visiting this place would exceed the end time, skip it and try the next best
-    if (currentTime + totalTime > endTime) {
-      availablePlaces = availablePlaces.filter((p) => p.id !== best.id);
+    // Skip places that are closed when we arrive.
+    if (!isPlaceAvailable(best, arrival, dayOfWeek)) {
+      availablePlaces = availablePlaces.filter(
+        (p) => p.id !== best.id
+      );
       continue;
     }
 
-    const arrival = currentTime + best.transit;
+    // Skip places where the visit would continue past closing.
+    if (!canFinishBeforeClosing(best, arrival, dayOfWeek)) {
+      availablePlaces = availablePlaces.filter(
+        (p) => p.id !== best.id
+      );
+      continue;
+    }
 
-    // Add this place to the itinerary
+    const totalTime = best.transit + best.avg_visit_duration;
+
+    // Skip places that would exceed the user's overall itinerary time.
+    if (currentTime + totalTime > endTime) {
+      availablePlaces = availablePlaces.filter(
+        (p) => p.id !== best.id
+      );
+      continue;
+    }
+
     itinerary.push({
       place: best.name,
       category: best.category,
@@ -76,14 +142,14 @@ export function generateDistanceAwareItinerary(
       longitude: Number(best.longitude),
     });
 
-    // Update current time and location
     currentTime = arrival + best.avg_visit_duration;
     currentLat = Number(best.latitude);
     currentLon = Number(best.longitude);
     lastPlace = best;
 
-    // Remove this place from the available places
-    availablePlaces = availablePlaces.filter((p) => p.id !== best.id);
+    availablePlaces = availablePlaces.filter(
+      (p) => p.id !== best.id
+    );
   }
 
   return itinerary;
