@@ -94,7 +94,7 @@ export function generateDistanceAwareItinerary(
 
       return {
         ...p,
-        score: computeScore(p, interests, lastPlace),
+        score: computeScore(p, interests, lastPlace) - transit * 0.2,
         transit,
       };
     });
