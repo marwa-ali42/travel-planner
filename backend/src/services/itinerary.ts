@@ -3,6 +3,8 @@ import { computeScore } from "./scoring.js";
 import { formatTime, parseTime } from "../utils/time.js";
 import { getTransitTimeMinutes } from "../utils/geo.js";
 
+const TRAVEL_TIME_WEIGHT = 0.2;
+
 function isPlaceAvailable(
   place: Place,
   arrivalTime: number,
@@ -83,18 +85,16 @@ export function generateDistanceAwareItinerary(
 
   while (currentTime < endTime && availablePlaces.length > 0) {
     const scored = availablePlaces.map((p) => {
-      const transit = lastPlace
-        ? getTransitTimeMinutes(
-            currentLat,
-            currentLon,
-            Number(p.latitude),
-            Number(p.longitude)
-          )
-        : 0;
+      const transit = getTransitTimeMinutes(
+        currentLat,
+        currentLon,
+        Number(p.latitude),
+        Number(p.longitude)
+      );
 
       return {
         ...p,
-        score: computeScore(p, interests, lastPlace) - transit * 0.2,
+        score: computeScore(p, interests, lastPlace) - transit * TRAVEL_TIME_WEIGHT,
         transit,
       };
     });
