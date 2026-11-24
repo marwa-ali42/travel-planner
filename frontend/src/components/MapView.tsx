@@ -28,19 +28,21 @@ export default function MapView({
     startingLon !== undefined &&
     startingLon !== null;
 
-  const routePositions: [number, number][] = [
-    ...(hasStartingLocation
-      ? [[startingLat!, startingLon!]]
-      : []),
+  const routePositions: [number, number][] = [];
 
-    ...itinerary.map(
-      (item) =>
-        [item.latitude, item.longitude] as [
-          number,
-          number
-        ]
-    ),
-  ];
+  if (hasStartingLocation) {
+    routePositions.push([
+      startingLat!,
+      startingLon!,
+    ]);
+  }
+
+  itinerary.forEach((item) => {
+    routePositions.push([
+      item.latitude,
+      item.longitude,
+    ]);
+  });
 
   return (
     <MapContainer
