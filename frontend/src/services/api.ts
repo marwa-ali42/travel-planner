@@ -5,12 +5,17 @@ export interface GenerateItineraryRequest {
   startTime: string;
   endTime: string;
   interests: string[];
+  dayOfWeek?: string;
+  startingLocation?: string;
+  startingLat?: number;
+  startingLon?: number;
 }
 
 export async function generateItinerary(
   data: GenerateItineraryRequest
 ) {
   console.log("API CALL", data);
+
   const response = await fetch(`${API_BASE}/itinerary/generate`, {
     method: "POST",
     headers: {
@@ -22,9 +27,8 @@ export async function generateItinerary(
   const body = await response.json();
 
   if (!response.ok) {
-    const errorBody = await response.json();
-    throw new Error(errorBody.error || "Failed to generate itinerary");
+    throw new Error(body.error || "Failed to generate itinerary");
   }
 
-  return body.itinerary;
+  return body;
 }

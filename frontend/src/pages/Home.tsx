@@ -13,28 +13,100 @@ export default function Home() {
   const [interests, setInterests] = useState<string[]>([]);
   const [itinerary, setItinerary] = useState<ItineraryItem[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [startingLocation, setStartingLocation] = useState("");
+  const [startingLat, setStartingLat] = useState<number | undefined>();
+  const [startingLon, setStartingLon] = useState<number | undefined>();
+
+  const [resolvedStartingLat, setResolvedStartingLat] =
+    useState<number | null>(null);
+
+  const [resolvedStartingLon, setResolvedStartingLon] =
+    useState<number | null>(null);
+
+  const [locationStatus, setLocationStatus] = useState("");
+
   const hasItinerary = itinerary.length > 0;
-  
-  // Function to generate itinerary
+
+  function handleUseCurrentLocation() {
+    if (!("geolocation" in navigator)) {
+      setLocationStatus("Location is not supported by this browser.");
+      return;
+    }
+
+    setLocationStatus("Getting your location...");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setStartingLat(position.coords.latitude);
+        setStartingLon(position.coords.longitude);
+        setStartingLocation("Current location");
+        setLocationStatus("✓ Current location detected");
+      },
+      (error) => {
+        console.warn("Location unavailable:", error);
+
+        setStartingLat(undefined);
+        setStartingLon(undefined);
+
+        setLocationStatus(
+          "Could not get your location. Enter a starting place instead."
+        );
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 600000,
+      }
+    );
+  }
+
   async function handleGenerate() {
     setLoading(true);
 
     try {
-      const itinerary = await generateItinerary({
+      console.log("Starting location:", {
+        place: startingLocation || null,
+        coordinates:
+          startingLat !== undefined &&
+          startingLon !== undefined
+            ? {
+                latitude: startingLat,
+                longitude: startingLon,
+              }
+            : null,
+      });
+
+      const result = await generateItinerary({
         city,
         startTime,
         endTime,
         interests,
+        startingLocation: startingLocation || undefined,
+        startingLat,
+        startingLon,
       });
 
-      setItinerary(itinerary);
+      setItinerary(result.itinerary);
+
+      setResolvedStartingLat(result.startingLat);
+      setResolvedStartingLon(result.startingLon);
+
+      console.log("Resolved starting location:", {
+        place: result.startingLocation,
+        latitude: result.startingLat,
+        longitude: result.startingLon,
+      });
     } catch (err) {
-      console.error(err);
+      console.error(
+        "Failed to generate itinerary:",
+        err
+      );
     } finally {
       setLoading(false);
     }
   }
-  
+
   return (
     <div className="h-screen flex flex-col">
 
@@ -53,6 +125,10 @@ export default function Home() {
             setEndTime={setEndTime}
             interests={interests}
             setInterests={setInterests}
+            startingLocation={startingLocation}
+            setStartingLocation={setStartingLocation}
+            onUseCurrentLocation={handleUseCurrentLocation}
+            locationStatus={locationStatus}
             onGenerate={handleGenerate}
             loading={loading}
           />
@@ -64,7 +140,12 @@ export default function Home() {
         {/* MAP */}
         <div className="flex-1">
           {hasItinerary ? (
-            <MapView itinerary={itinerary} />
+            <MapView
+              itinerary={itinerary}
+              startingLat={resolvedStartingLat}
+              startingLon={resolvedStartingLon}
+              startingLocation={startingLocation}
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500">
               Generate a trip to see the map 🗺️

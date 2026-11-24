@@ -7,6 +7,7 @@ export function computeScore(
   interests: string[],
   lastPlace: Place | null
 ): number {
+  // Start with the place's rating as the base score
   let score = Number(place.rating) || 0;
 
   // Add 2 points for interest match
