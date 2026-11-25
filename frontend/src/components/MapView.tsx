@@ -1,3 +1,5 @@
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 import {
   MapContainer,
   TileLayer,
@@ -5,9 +7,22 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import FitBounds from "@/utils/FitBounds";
 import type { ItineraryItem } from "../types";
 import createNumberIcon from "@/utils/NumberIcon";
+
+const getAssetUrl = (asset: string | { src: string }) =>
+  typeof asset === "string" ? asset : asset.src;
+
+delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: getAssetUrl(markerIcon),
+  iconRetinaUrl: getAssetUrl(markerIcon2x),
+  shadowUrl: getAssetUrl(markerShadow),
+});
 
 type Props = {
   itinerary: ItineraryItem[];
