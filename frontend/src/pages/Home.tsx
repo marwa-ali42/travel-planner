@@ -1,7 +1,7 @@
 import SearchPanel from "../components/SearchPanel";
 import MapView from "../components/MapView";
 import ItineraryList from "../components/ItineraryList";
-import Summary from "../components/Summary.js";
+import Summary from "../components/Summary";
 import type { ItineraryItem } from "@/types";
 import { useState } from "react";
 import { generateItinerary } from "@/services/api";
@@ -108,14 +108,11 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="min-h-screen bg-gray-50">
 
-      {/* TOP SECTION */}
-      <div className="flex flex-1">
-
-        {/* LEFT SIDE */}
-        <div className="w-1/3 p-4 border-r flex flex-col gap-4">
-
+      {/* SEARCH */}
+      <div className="border-b bg-white">
+        <div className="mx-auto max-w-7xl p-4">
           <SearchPanel
             city={city}
             setCity={setCity}
@@ -132,34 +129,51 @@ export default function Home() {
             onGenerate={handleGenerate}
             loading={loading}
           />
-
-          {hasItinerary && <Summary itinerary={itinerary} />}
-
         </div>
+      </div>
 
-        {/* MAP */}
-        <div className="flex-1">
-          {hasItinerary ? (
-            <MapView
-              itinerary={itinerary}
-              startingLat={resolvedStartingLat}
-              startingLon={resolvedStartingLon}
-              startingLocation={startingLocation}
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500">
-              Generate a trip to see the map 🗺️
+      {/* RESULTS */}
+      {hasItinerary ? (
+        <main className="mx-auto max-w-7xl p-4 md:p-6">
+
+          {/* SUMMARY */}
+          <Summary itinerary={itinerary} />
+
+          {/* STORY + MAP */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+
+            {/* STORY */}
+            <div className="min-w-0 rounded-3xl bg-white shadow-sm">
+              <ItineraryList itinerary={itinerary} />
             </div>
-          )}
+
+            {/* MAP */}
+            <div className="h-[600px] overflow-hidden rounded-3xl shadow-sm">
+              <MapView
+                itinerary={itinerary}
+                startingLat={resolvedStartingLat}
+                startingLon={resolvedStartingLon}
+                startingLocation={startingLocation}
+              />
+            </div>
+
+          </div>
+        </main>
+      ) : (
+        <div className="flex min-h-[60vh] items-center justify-center px-4 text-center">
+          <div>
+            <div className="mb-4 text-5xl">✈️</div>
+
+            <h2 className="text-2xl font-bold text-gray-900">
+              Your adventure is waiting
+            </h2>
+
+            <p className="mt-2 text-gray-500">
+              Choose a destination and your interests to create your day.
+            </p>
+          </div>
         </div>
-
-      </div>
-
-      {/* BOTTOM SECTION */}
-      <div className="h-1/3 border-t overflow-auto">
-        <ItineraryList itinerary={itinerary} />
-      </div>
-
+      )}
     </div>
   );
 }
