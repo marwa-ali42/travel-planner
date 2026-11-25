@@ -142,7 +142,6 @@ export default function ItineraryList({
                       }`}
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
-
                         <div>
                           <div className="text-sm font-semibold text-indigo-600">
                             {item.start}
@@ -160,24 +159,11 @@ export default function ItineraryList({
                         <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
                           {item.start} – {item.end}
                         </span>
-
                       </div>
 
                       <p className="mt-3 text-sm leading-6 text-gray-600">
                         {getStory(item, i)}
                       </p>
-
-                      {item.transit > 0 && (
-                        <div className="mt-4 flex items-center gap-2 text-xs font-medium text-gray-500">
-                          <span>🚶</span>
-
-                          <span>
-                            {i === 0
-                              ? `${item.transit} min from your starting point`
-                              : `${item.transit} min from your previous stop`}
-                          </span>
-                        </div>
-                      )}
 
                       {isSelected && (
                         <div className="mt-4 text-xs font-semibold text-indigo-600">
