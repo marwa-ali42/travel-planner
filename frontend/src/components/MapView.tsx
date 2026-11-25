@@ -6,10 +6,14 @@ import {
   Marker,
   Popup,
   Polyline,
+  useMap,
 } from "react-leaflet";
+import { useEffect } from "react";
+
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
 import FitBounds from "@/utils/FitBounds";
 import type { ItineraryItem } from "../types";
 import createNumberIcon from "@/utils/NumberIcon";
@@ -18,6 +22,7 @@ const getAssetUrl = (asset: string | { src: string }) =>
   typeof asset === "string" ? asset : asset.src;
 
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
+
 L.Icon.Default.mergeOptions({
   iconUrl: getAssetUrl(markerIcon),
   iconRetinaUrl: getAssetUrl(markerIcon2x),
@@ -29,13 +34,48 @@ type Props = {
   startingLat?: number | null;
   startingLon?: number | null;
   startingLocation?: string | null;
+  selectedIndex: number | null;
+  onSelectStop: (index: number) => void;
 };
+
+function FocusSelectedStop({
+  itinerary,
+  selectedIndex,
+}: {
+  itinerary: ItineraryItem[];
+  selectedIndex: number | null;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (
+      selectedIndex === null ||
+      !itinerary[selectedIndex]
+    ) {
+      return;
+    }
+
+    const stop = itinerary[selectedIndex];
+
+    map.flyTo(
+      [stop.latitude, stop.longitude],
+      15,
+      {
+        duration: 0.8,
+      }
+    );
+  }, [itinerary, selectedIndex, map]);
+
+  return null;
+}
 
 export default function MapView({
   itinerary,
   startingLat,
   startingLon,
   startingLocation,
+  selectedIndex,
+  onSelectStop,
 }: Props) {
   const hasStartingLocation =
     startingLat !== undefined &&
@@ -92,14 +132,21 @@ export default function MapView({
             item.longitude,
           ]}
           icon={createNumberIcon(i + 1)}
+          eventHandlers={{
+            click: () => onSelectStop(i),
+          }}
         >
           <Popup>
             <strong>
               {i + 1}. {item.place}
             </strong>
+
             <br />
+
             {item.start} – {item.end}
+
             <br />
+
             {item.transit > 0 &&
               `${item.transit} min travel`}
           </Popup>
@@ -113,6 +160,11 @@ export default function MapView({
           weight={4}
         />
       )}
+
+      <FocusSelectedStop
+        itinerary={itinerary}
+        selectedIndex={selectedIndex}
+      />
 
       <FitBounds
         itinerary={itinerary}

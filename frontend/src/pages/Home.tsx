@@ -26,6 +26,9 @@ export default function Home() {
 
   const [locationStatus, setLocationStatus] = useState("");
 
+  const [selectedStopIndex, setSelectedStopIndex] =
+  useState<number | null>(null);
+
   const hasItinerary = itinerary.length > 0;
 
   function handleUseCurrentLocation() {
@@ -142,9 +145,13 @@ export default function Home() {
           {/* STORY + MAP */}
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
 
-            {/* STORY */}
+            {/* STORY + LIST */}
             <div className="min-w-0 rounded-3xl bg-white shadow-sm">
-              <ItineraryList itinerary={itinerary} />
+              <ItineraryList
+                itinerary={itinerary}
+                selectedIndex={selectedStopIndex}
+                onSelectStop={setSelectedStopIndex}
+              />
             </div>
 
             {/* MAP */}
@@ -154,6 +161,8 @@ export default function Home() {
                 startingLat={resolvedStartingLat}
                 startingLon={resolvedStartingLon}
                 startingLocation={startingLocation}
+                selectedIndex={selectedStopIndex}
+                onSelectStop={setSelectedStopIndex}
               />
             </div>
 

@@ -1,5 +1,11 @@
 import type { ItineraryItem } from "@/types";
 
+type Props = {
+  itinerary: ItineraryItem[];
+  selectedIndex: number | null;
+  onSelectStop: (index: number) => void;
+};
+
 function getIcon(category: string) {
   const value = category.toLowerCase();
 
@@ -55,9 +61,9 @@ function getStory(item: ItineraryItem, index: number) {
 
 export default function ItineraryList({
   itinerary,
-}: {
-  itinerary: ItineraryItem[];
-}) {
+  selectedIndex,
+  onSelectStop,
+}: Props) {
   if (!itinerary.length) {
     return (
       <div className="rounded-2xl border border-gray-200 bg-white p-6 text-center">
@@ -91,62 +97,100 @@ export default function ItineraryList({
       </div>
 
       <div>
-        {itinerary.map((item, i) => (
-          <div key={`${item.place}-${i}`} className="relative">
-            <div className="flex gap-4">
-              {/* Timeline */}
-              <div className="flex w-10 shrink-0 flex-col items-center">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-lg">
-                  {getIcon(item.category)}
+        {itinerary.map((item, i) => {
+          const isSelected = selectedIndex === i;
+
+          return (
+            <div
+              key={`${item.place}-${i}`}
+              className="relative"
+            >
+              <div className="flex gap-4">
+
+                {/* TIMELINE */}
+                <div className="flex w-10 shrink-0 flex-col items-center">
+                  <button
+                    type="button"
+                    onClick={() => onSelectStop(i)}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full text-lg transition ${
+                      isSelected
+                        ? "bg-indigo-600 text-white shadow-lg ring-4 ring-indigo-100"
+                        : "bg-indigo-100"
+                    }`}
+                    aria-label={`Show ${item.place} on map`}
+                  >
+                    {getIcon(item.category)}
+                  </button>
+
+                  {i < itinerary.length - 1 && (
+                    <div className="mt-2 min-h-16 w-px bg-gray-200" />
+                  )}
                 </div>
 
-                {i < itinerary.length - 1 && (
-                  <div className="mt-2 min-h-16 w-px bg-gray-200" />
-                )}
-              </div>
+                {/* STORY CARD */}
+                <div className="mb-8 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => onSelectStop(i)}
+                    className="block w-full text-left"
+                  >
+                    <div
+                      className={`rounded-2xl border p-4 shadow-sm transition-all ${
+                        isSelected
+                          ? "border-indigo-400 bg-indigo-50 shadow-md ring-1 ring-indigo-200"
+                          : "border-gray-200 bg-white hover:border-indigo-200 hover:shadow-md"
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-2">
 
-              {/* Story */}
-              <div className="mb-8 flex-1">
-                <div className="text-sm font-semibold text-indigo-600">
-                  {item.start}
-                </div>
+                        <div>
+                          <div className="text-sm font-semibold text-indigo-600">
+                            {item.start}
+                          </div>
 
-                <div className="mt-1 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900">
-                        {item.place}
-                      </h3>
+                          <h3 className="mt-1 text-lg font-bold text-gray-900">
+                            {item.place}
+                          </h3>
 
-                      <span className="mt-1 inline-block text-sm capitalize text-gray-500">
-                        {item.category}
+                          <span className="mt-1 inline-block text-sm capitalize text-gray-500">
+                            {item.category}
+                          </span>
+                        </div>
+
+                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
+                          {item.start} – {item.end}
+                        </span>
+
+                      </div>
+
+                      <p className="mt-3 text-sm leading-6 text-gray-600">
+                        {getStory(item, i)}
+                      </p>
+
+                      {isSelected && (
+                        <div className="mt-4 text-xs font-semibold text-indigo-600">
+                          📍 Showing on map
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* TRAVEL */}
+                  {i < itinerary.length - 1 && (
+                    <div className="mt-3 flex items-center gap-2 pl-2 text-sm text-gray-500">
+                      <span>🚶</span>
+
+                      <span>
+                        {itinerary[i + 1].transit} min to your next stop
                       </span>
                     </div>
-
-                    <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
-                      {item.start} – {item.end}
-                    </span>
-                  </div>
-
-                  <p className="mt-3 text-sm leading-6 text-gray-600">
-                    {getStory(item, i)}
-                  </p>
+                  )}
                 </div>
 
-                {/* Travel to next stop */}
-                {i < itinerary.length - 1 && (
-                  <div className="mt-3 flex items-center gap-2 pl-2 text-sm text-gray-500">
-                    <span>🚶</span>
-
-                    <span>
-                      {itinerary[i + 1].transit} min to your next stop
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
