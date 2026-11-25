@@ -167,6 +167,18 @@ export default function ItineraryList({
                         {getStory(item, i)}
                       </p>
 
+                      {item.transit > 0 && (
+                        <div className="mt-4 flex items-center gap-2 text-xs font-medium text-gray-500">
+                          <span>🚶</span>
+
+                          <span>
+                            {i === 0
+                              ? `${item.transit} min from your starting point`
+                              : `${item.transit} min from your previous stop`}
+                          </span>
+                        </div>
+                      )}
+
                       {isSelected && (
                         <div className="mt-4 text-xs font-semibold text-indigo-600">
                           📍 Showing on map
@@ -176,12 +188,14 @@ export default function ItineraryList({
                   </button>
 
                   {/* TRAVEL */}
-                  {i < itinerary.length - 1 && (
+                  {item.transit > 0 && (
                     <div className="mt-3 flex items-center gap-2 pl-2 text-sm text-gray-500">
                       <span>🚶</span>
 
                       <span>
-                        {itinerary[i + 1].transit} min to your next stop
+                        {i === 0
+                          ? `${item.transit} min from your starting point`
+                          : `${item.transit} min from your previous stop`}
                       </span>
                     </div>
                   )}

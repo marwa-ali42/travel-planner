@@ -69,6 +69,33 @@ function FocusSelectedStop({
   return null;
 }
 
+function createStartingIcon(isCurrentLocation: boolean) {
+  return L.divIcon({
+    className: "",
+    html: `
+      <div
+        style="
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: ${isCurrentLocation ? "#2563eb" : "#ffffff"};
+          border: 4px solid ${isCurrentLocation ? "#ffffff" : "#2563eb"};
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 15px;
+        "
+      >
+        ${isCurrentLocation ? "📍" : "🏁"}
+      </div>
+    `,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16],
+  });
+}
+
 export default function MapView({
   itinerary,
   startingLat,
@@ -82,6 +109,9 @@ export default function MapView({
     startingLat !== null &&
     startingLon !== undefined &&
     startingLon !== null;
+  
+  const isCurrentLocation =
+    startingLocation === "Current location";
 
   const routePositions: [number, number][] = [];
 
@@ -115,11 +145,20 @@ export default function MapView({
             startingLat!,
             startingLon!,
           ]}
+          icon={createStartingIcon(isCurrentLocation)}
         >
           <Popup>
-            <strong>Starting point</strong>
+            <strong>
+              {isCurrentLocation
+                ? "📍 You are here"
+                : "🏁 Starting point"}
+            </strong>
+
             <br />
-            {startingLocation || "Starting location"}
+
+            {isCurrentLocation
+              ? "Your journey starts here"
+              : startingLocation || "Starting location"}
           </Popup>
         </Marker>
       )}
