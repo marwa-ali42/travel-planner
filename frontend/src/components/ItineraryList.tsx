@@ -1,4 +1,5 @@
 import type { ItineraryItem } from "@/types";
+import { getStory } from "@/utils/StoryEngine";
 
 type Props = {
   itinerary: ItineraryItem[];
@@ -13,51 +14,11 @@ function getIcon(category: string) {
   if (value.includes("food")) return "🍜";
   if (value.includes("park")) return "🌳";
   if (value.includes("history")) return "📜";
+  if (value.includes("landmark")) return "✨";
 
   return "✨";
 }
 
-function getStory(item: ItineraryItem, index: number) {
-  const category = item.category.toLowerCase();
-
-  if (index === 0) {
-    if (category.includes("museum")) {
-      return "Start your adventure by stepping into the city's stories and discovering something new.";
-    }
-
-    if (category.includes("food")) {
-      return "Start your adventure with something delicious and get a taste of the city.";
-    }
-
-    if (category.includes("park")) {
-      return "Ease into the day with some fresh air and a slower start.";
-    }
-
-    if (category.includes("history")) {
-      return "Begin your journey by discovering the history that shaped this place.";
-    }
-
-    return "Your adventure starts here. Take your time and enjoy the first stop.";
-  }
-
-  if (category.includes("museum")) {
-    return "Take your time to explore, discover something unexpected, and soak up the atmosphere.";
-  }
-
-  if (category.includes("food")) {
-    return "Time to follow your appetite. Slow down, grab a bite, and enjoy the local flavour.";
-  }
-
-  if (category.includes("park")) {
-    return "After exploring, slow the pace down with some fresh air and a relaxing walk.";
-  }
-
-  if (category.includes("history")) {
-    return "Continue exploring the stories and places that helped shape the city.";
-  }
-
-  return "Keep exploring and see where the day takes you.";
-}
 
 export default function ItineraryList({
   itinerary,
@@ -127,7 +88,7 @@ export default function ItineraryList({
                   )}
                 </div>
 
-                {/* STORY CARD */}
+                {/* STORY */}
                 <div className="mb-8 flex-1">
                   <button
                     type="button"
@@ -142,6 +103,7 @@ export default function ItineraryList({
                       }`}
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
+
                         <div>
                           <div className="text-sm font-semibold text-indigo-600">
                             {item.start}
@@ -159,6 +121,7 @@ export default function ItineraryList({
                         <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
                           {item.start} – {item.end}
                         </span>
+
                       </div>
 
                       <p className="mt-3 text-sm leading-6 text-gray-600">
