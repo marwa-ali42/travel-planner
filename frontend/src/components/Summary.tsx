@@ -20,12 +20,11 @@ export default function Summary({
       </p>
 
       <h2 className="mt-2 text-3xl font-bold">
-        Your adventure starts here ✨
+        {summary.headline}
       </h2>
 
       <p className="mt-2 text-sm leading-6 text-white/80">
-        We've planned a day of exploring, discovering and making the most
-        of your time.
+        {summary.description}
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-3">
