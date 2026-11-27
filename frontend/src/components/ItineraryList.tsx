@@ -125,7 +125,13 @@ export default function ItineraryList({
                       </div>
 
                       <p className="mt-3 text-sm leading-6 text-gray-600">
-                        {getStory(item, i)}
+                        {getStory({
+                          item,
+                          index: i,
+                          total: itinerary.length,
+                          previous: itinerary[i - 1],
+                          next: itinerary[i + 1],
+                        })}
                       </p>
 
                       {isSelected && (
